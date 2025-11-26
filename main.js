@@ -6,13 +6,13 @@ const layout = [
   "4","5","6","*",
   "1","2","3","-",
   "0",".","=","+",
-  "C"
+  "%","C"
 ];
 
 // Add keyboard support
 document.addEventListener("keydown", (e) => {
   // Prevent default behavior for keys we're handling
-  if(/[0-9+\-*/.=]|Enter|Escape/.test(e.key)) {
+  if(/[0-9+\-*/.=%]|Enter|Escape/.test(e.key)) {
     e.preventDefault();
   }
 
@@ -25,7 +25,9 @@ document.addEventListener("keydown", (e) => {
   else if (e.key === '*') key = '*';
   else if (e.key === '/') key = '/';
   else if (e.key === '.') key = '.';
-  else if (e.key === '=' || e.key === 'Enter') key = '=';
+  else if (e.key === '=') key = '=';
+  else if (e.key === '%') key = '%';
+  else if (e.key === 'Enter') key = '=';
   else if (e.key === 'Escape' || e.key === 'c' || e.key === 'C') key = 'C';
 
   if (key) onKey(key);
@@ -45,6 +47,33 @@ function render() {
 
 function onKey(k) {
   if (k === "C") { display.value = ""; return; }
+  if (k === "%") {
+    // Convert the last number in the display to percentage (divide by 100)
+    if (display.value) {
+      try {
+        // Find the last number in the expression, handling operators at the end
+        const match = display.value.match(/([0-9.]+)([-+*/]?)$/);
+        if (match) {
+          const fullMatch = match[0];
+          const lastNumber = match[1];
+          const lastNumberValue = parseFloat(lastNumber);
+          const percentageValue = lastNumberValue / 100;
+
+          // Replace the last number with its percentage value, keeping the operator if present
+          let replacement = percentageValue.toString();
+          if (match[2]) {
+            replacement += match[2];
+          }
+
+          display.value = display.value.slice(0, -fullMatch.length) + replacement;
+        }
+      } catch {
+        display.value = "Error";
+        setTimeout(() => (display.value = ""), 800);
+      }
+    }
+    return;
+  }
   if (k === "=") {
     try {
       // безопасный разбор только разрешённых символов
