@@ -9,6 +9,28 @@ const layout = [
   "C"
 ];
 
+// Add keyboard support
+document.addEventListener("keydown", (e) => {
+  // Prevent default behavior for keys we're handling
+  if(/[0-9+\-*/.=]|Enter|Escape/.test(e.key)) {
+    e.preventDefault();
+  }
+
+  let key = null;
+
+  // Map keyboard keys to calculator keys
+  if (e.key >= '0' && e.key <= '9') key = e.key;
+  else if (e.key === '+') key = '+';
+  else if (e.key === '-') key = '-';
+  else if (e.key === '*') key = '*';
+  else if (e.key === '/') key = '/';
+  else if (e.key === '.') key = '.';
+  else if (e.key === '=' || e.key === 'Enter') key = '=';
+  else if (e.key === 'Escape' || e.key === 'c' || e.key === 'C') key = 'C';
+
+  if (key) onKey(key);
+});
+
 function render() {
   layout.forEach(k => {
     const b = document.createElement("button");
